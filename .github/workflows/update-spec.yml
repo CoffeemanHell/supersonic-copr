@@ -1,0 +1,51 @@
+name: Check Upstream and Auto Update Spec
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Upstream Version
+        id: version_check
+        run: |
+          UPSTREAM_VER=$(curl -s "https://api.github.com/repos/dweymouth/supersonic/releases/latest" | jq -r '.tag_name' | sed 's/v//')
+          
+          CURRENT_VER=$(grep -E '^Version:' supersonic.spec | awk '{print $2}')
+          
+          echo "Source Repository Version: $UPSTREAM_VER"
+          echo "Local Repository Version: $CURRENT_VER"
+          
+          if [ "$UPSTREAM_VER" != "$CURRENT_VER" ] && [ "$UPSTREAM_VER" != "null" ]; then
+            echo "UPDATE_NEEDED=true" >> $GITHUB_ENV
+            echo "NEW_VERSION=$UPSTREAM_VER" >> $GITHUB_ENV
+          else
+            echo "UPDATE_NEEDED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Update Spec and Commit
+        if: env.UPDATE_NEEDED == 'true'
+        run: |
+          UPSTREAM_VER="${{ env.NEW_VERSION }}"
+          
+          sed -i "s/^Version:.*/Version:        ${UPSTREAM_VER}/" supersonic.spec
+          sed -i "s/^Release:.*/Release:        1%{?dist}/" supersonic.spec
+          
+          DATE=$(date +"%a %b %d %Y")
+          
+          sed -i "/^%changelog/a * ${DATE} coffeeicus <coffeelover@coffeelover.uk> - ${UPSTREAM_VER}-1\n- New upstream release: ${UPSTREAM_VER}\n" supersonic.spec
+          
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add supersonic.spec
+          git commit -m "Update spec to version ${UPSTREAM_VER} [skip ci]"
+          git push
