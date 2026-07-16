@@ -1,5 +1,5 @@
 %global debug_package %{nil}
-%global _binary_payload w22.zstdio
+%global _binary_payload w22T0.zstdio
 
 Name:           supersonic
 Version:        0.22.0
@@ -42,11 +42,9 @@ A lightweight and full-featured cross-platform desktop client for self-hosted mu
 
 export CGO_ENABLED=1
 
-%ifarch x86_64
-  export GOAMD64=v3
-  export CFLAGS="%{optflags} -march=x86-64-v3"
-  export CXXFLAGS="%{optflags} -march=x86-64-v3"
-%endif
+export GOAMD64=v2
+export CFLAGS="%{optflags} -march=x86-64-v2"
+export CXXFLAGS="%{optflags} -march=x86-64-v2"
 
 go build -v -mod=mod -trimpath -buildmode=pie -tags="wayland" -ldflags="-s -w" -o %{name} .
 
@@ -55,6 +53,7 @@ install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
 
 cp res/supersonic-desktop.desktop res/%{name}.desktop
 mkdir -p %{buildroot}%{_datadir}/applications
+
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   --remove-key="Path" \
@@ -79,4 +78,3 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %changelog
 * Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-1
-- Initial optimized build with Wayland support, x86-64-v3 flags
