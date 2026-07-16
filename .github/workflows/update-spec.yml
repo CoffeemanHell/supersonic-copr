@@ -85,24 +85,11 @@ jobs:
           with open('supersonic.spec', 'w') as f:
               f.write(spec_content)
 
-          if os.path.exists('README.md'):
-              with open('README.md', 'r') as f_readme:
-                  readme_content = f_readme.read()
-              
-              readme_content = re.sub(
-                  r'last_build\.png\?v=[^\s\)]*',
-                  f'last_build.png?v={upstream_ver}',
-                  readme_content
-              )
-              
-              with open('README.md', 'w') as f_readme:
-                  f_readme.write(readme_content)
-
       - name: Commit and Push
         if: steps.upstream.outputs.version != steps.current.outputs.version
         run: |
           git config user.name "release-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add supersonic.spec README.md
+          git add supersonic.spec
           git commit -m "Bump to v${{ steps.upstream.outputs.version }}"
           git push
