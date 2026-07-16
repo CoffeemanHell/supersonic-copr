@@ -1,1 +1,1 @@
-![Build](https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/status_image/last_build.png)
+[![Build Status](https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/status_image/last_build.png?v=1)](https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/)
