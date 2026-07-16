@@ -47,7 +47,9 @@ cat > %{app_id}.metainfo.xml << 'EOF'
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>Supersonic</name>
-  <developer_name>Drew Weymouth</developer_name>
+  <developer id="github.com/dweymouth">
+    <name>Drew Weymouth</name>
+  </developer>
   <summary> A lightweight cross-platform desktop client for Subsonic and Jellyfin music servers</summary>
   <content_rating type="oars-1.0">
     <content_attribute id="social-audio">intense</content_attribute>
@@ -92,13 +94,13 @@ cat > %{app_id}.metainfo.xml << 'EOF'
       <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/AlbumsView.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/AlbumView.png</image>
+      <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/AlbumView.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/ArtistView.png</image>
+      <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/ArtistView.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/FavoriteSongsView.png</image>
+      <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/FavoriteSongsView.png</image>
     </screenshot>
   </screenshots>
 
