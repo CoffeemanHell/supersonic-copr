@@ -1,4 +1,5 @@
 %global debug_package %{nil}
+%global _binary_payload w22.zstdio
 
 Name:           supersonic
 Version:        0.22.0
@@ -11,7 +12,6 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  golang >= 1.21
 BuildRequires:  gcc
-BuildRequires:  make
 BuildRequires:  git
 BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconf-pkg-config
@@ -26,6 +26,8 @@ BuildRequires:  libXi-devel
 BuildRequires:  libglvnd-devel
 BuildRequires:  libXxf86vm-devel
 
+Requires:       hicolor-icon-theme
+
 Obsoletes:      supersonic-desktop < %{version}-%{release}
 Provides:       supersonic-desktop = %{version}-%{release}
 
@@ -36,35 +38,37 @@ A lightweight and full-featured cross-platform desktop client for self-hosted mu
 %autosetup -n %{name}-%{version}
 
 %build
+%set_build_flags
+
 export CGO_ENABLED=1
 
 %ifarch x86_64
   export GOAMD64=v3
-  export CFLAGS="%{optflags} -march=x86-64-v3 -O3 -pipe"
-  export CXXFLAGS="%{optflags} -march=x86-64-v3 -O3 -pipe"
+  export CFLAGS="%{optflags} -march=x86-64-v3"
+  export CXXFLAGS="%{optflags} -march=x86-64-v3"
 %endif
 
-export GOFLAGS="-mod=mod -trimpath -buildmode=pie"
-
-sed -i 's/go build/go build -ldflags="-s -w"/g' Makefile
-
-make build
+go build -v -mod=mod -trimpath -buildmode=pie -tags="wayland" -ldflags="-s -w" -o %{name} .
 
 %install
-install -Dm755 supersonic %{buildroot}%{_bindir}/%{name}
+install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
 
-install -Dm644 res/supersonic-desktop.desktop \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
-sed -i -e '/^Path=/d' \
-       -e "s/^Exec=.*/Exec=%{name}/" \
-       -e "s/^Icon=.*/Icon=%{name}/" \
-      %{buildroot}%{_datadir}/applications/%{name}.desktop
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+cp res/supersonic-desktop.desktop res/%{name}.desktop
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/applications \
+  --remove-key="Path" \
+  --set-key="Exec" --set-value="%{name}" \
+  --set-key="Icon" --set-value="%{name}" \
+  res/%{name}.desktop
 
 for size in 128 256 512; do
   install -Dm644 res/appicon-${size}.png \
     %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
 done
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files
 %license LICENSE
