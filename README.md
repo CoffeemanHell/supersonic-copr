@@ -1,4 +1,4 @@
-# *Supersonic-copr* [![Copr build status](https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/status_image/last_build.png)](https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/)
+# *Supersonic-copr* <a href="https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/"><img align='right' src="https://copr.fedorainfracloud.org/coprs/coffeeicus/supersonic/package/supersonic/status_image/last_build.png" /></a>
 
 Fedora COPR packaging for [Supersonic](https://github.com/dweymouth/supersonic) the desktop music client for Subsonic/Navidrome. 
 
