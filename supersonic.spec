@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Name:           supersonic
 Version:        0.22.0
 Release:        1%{?dist}
@@ -5,13 +7,17 @@ Summary:        Cross-platform desktop client for self-hosted music servers
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/dweymouth/supersonic
-Source0:        %{url}/archive/refs/tags/v%{version}/supersonic-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  golang >= 1.21
+BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  git
 BuildRequires:  desktop-file-utils
+BuildRequires:  pkgconf-pkg-config
 BuildRequires:  mpv-devel
+BuildRequires:  wayland-devel
+BuildRequires:  libxkbcommon-devel
 BuildRequires:  libX11-devel
 BuildRequires:  libXcursor-devel
 BuildRequires:  libXrandr-devel
@@ -24,13 +30,24 @@ Obsoletes:      supersonic-desktop < %{version}-%{release}
 Provides:       supersonic-desktop = %{version}-%{release}
 
 %description
-A lightweight and full-featured cross-platform desktop client for self-hosted music servers
+A lightweight and full-featured cross-platform desktop client for self-hosted music servers.
 
 %prep
-%autosetup -n supersonic-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
-export GOFLAGS=-mod=mod
+export CGO_ENABLED=1
+
+%ifarch x86_64
+  export GOAMD64=v3
+  export CFLAGS="%{optflags} -march=x86-64-v3 -O3 -pipe"
+  export CXXFLAGS="%{optflags} -march=x86-64-v3 -O3 -pipe"
+%endif
+
+export GOFLAGS="-mod=mod -trimpath"
+
+sed -i 's/go build/go build -ldflags="-s -w"/g' Makefile
+
 make build
 
 %install
@@ -57,6 +74,5 @@ done
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
-* Thu Jul 16 2026 coffeeicus coffeelover@coffeelover.uk - 0.22.0-1
-- Rename package from supersonic-desktop to supersonic
-- Rely on automatic ELF dependency detection instead of manual Requires
+* Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-1
+- Initial optimized build with Wayland support and x86-64-v3 flags
