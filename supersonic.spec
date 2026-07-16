@@ -1,5 +1,6 @@
 %global debug_package %{nil}
 %global _binary_payload w22T0.zstdio
+%global app_id io.github.dweymouth.supersonic
 
 Name:           supersonic
 Version:        0.22.0
@@ -25,6 +26,7 @@ BuildRequires:  libXinerama-devel
 BuildRequires:  libXi-devel
 BuildRequires:  libglvnd-devel
 BuildRequires:  libXxf86vm-devel
+BuildRequires:  libappstream-glib
 
 Requires:       hicolor-icon-theme
 
@@ -37,6 +39,159 @@ A lightweight and full-featured cross-platform desktop client for self-hosted mu
 %prep
 %autosetup -n %{name}-%{version}
 
+cat > %{app_id}.metainfo.xml << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2023 anarcat <anarcat@debian.org> -->
+<component type="desktop-application">
+  <id>io.github.dweymouth.supersonic</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <name>Supersonic</name>
+  <developer_name>Drew Weymouth</developer_name>
+  <summary> A lightweight cross-platform desktop client for Subsonic and Jellyfin music servers</summary>
+  <content_rating type="oars-1.0">
+    <content_attribute id="social-audio">intense</content_attribute>
+  </content_rating>
+
+  <description>
+    <p>
+      A lightweight cross-platform desktop client for Subsonic and Jellyfin music
+      servers.
+    </p>
+
+    <p>
+      Features:
+    </p>
+    <ul>
+      <li>Fast, lightweight, native UI, with infinite scrolling</li>
+      <li>Light and Dark themes, with optional auto theme switching</li>
+      <li>High-quality gapless audio playback powered by MPV, with optional audio exclusive mode</li>
+      <li>ReplayGain support (depends on files being tagged on server)</li>
+      <li>MPRIS and Mac OS media center integration</li>
+      <li>Scrobble plays to server, with configurable criteria</li>
+      <li>Multi-server support</li>
+      <li>Primary and alternate server hostnames, e.g. for internal and external URLs</li>
+      <li>Set filters in albums browsing view</li>
+      <li>Sort tracklist views by column and configure visible tracklist columns</li>
+      <li>Set/unset favorite and browse by favorite albums, artists, and songs</li>
+      <li>Shuffle and repeat playback modes (partial; shuffle album, playlist, artist radio, random songs)</li>
+    </ul>
+  </description>
+
+  <categories>
+    <category>Audio</category>
+  </categories>
+
+  <launchable type="desktop-id">io.github.dweymouth.supersonic.desktop</launchable>
+
+  <url type="homepage">https://github.com/dweymouth/supersonic</url>
+  <url type="bugtracker">https://github.com/dweymouth/supersonic/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The options dialog</caption>
+      <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/AlbumsView.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/AlbumView.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/ArtistView.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.github.com/dweymouth/supersonic/main/res/screenshots/FavoriteSongsView.png</image>
+    </screenshot>
+  </screenshots>
+
+ <releases>
+  <release version="0.21.1" date="2026-04-07">
+   <description></description>
+  </release>
+  <release version="0.21.0" date="2026-03-12">
+   <description/>
+  </release>
+  <release version="0.20.1" date="2026-01-31">
+   <description/>
+  </release>
+  <release version="0.20.0" date="2026-01-11">
+   <description/>
+  </release>
+  <release version="0.19.0" date="2025-10-30">
+   <description/>
+  </release>
+  <release version="0.18.1" date="2025-09-15">
+   <description/>
+  </release>
+  <release version="0.18.0" date="2025-08-12">
+   <description/>
+  </release>
+  <release version="0.17.0" date="2025-07-16">
+   <description/>
+  </release>
+  <release version="0.16.0" date="2025-06-17">
+   <description/>
+  </release>
+  <release version="0.15.2" date="2025-04-25">
+   <description/>
+  </release>
+  <release version="0.15.1" date="2025-04-07">
+   <description/>
+  </release>
+  <release version="0.15.0" date="2025-04-07">
+   <description/>
+  </release>
+  <release version="0.14.0" date="2025-02-24">
+   <description/>
+  </release>
+  <release version="0.13.2" date="2024-12-22">
+   <description/>
+  </release>
+  <release version="0.13.1" date="2024-08-20">
+   <description/>
+  </release>
+  <release version="0.13.0" date="2024-07-31">
+   <description/>
+  </release>
+  <release version="0.12.0" date="2024-07-01">
+   <description/>
+  </release>
+  <release version="0.11.0" date="2024-06-05">
+   <description/>
+  </release>
+  <release version="0.10.1" date="2024-04-21"/>
+  <release version="0.10.0" date="2024-04-17"/>
+  <release version="0.9.1" date="2024-02-26"/>
+  <release date="2024-01-27" version="0.9.0">
+   <description>
+     <p>
+       Version 0.9.0 of Supersonic
+     </p>
+
+     <p>
+       Added
+     </p>
+     <ul>
+       <li>Allow reordering of tracks in the play queue</li>
+       <li>Highlight the icon of the current page's navigation button</li>
+       <li>Show release type in album page header (for OpenSubsonic servers)</li>
+       <li>Setting to save and reload play queue on exit/startup</li>
+       <li>Use most recent playlist as default in "Add to playlist" dialog</li>
+       <li>Option to show desktop notifications on track change</li>
+       <li>Added icons to context menu items</li>
+     </ul>
+
+     <p>
+       Fixed
+     </p>
+     <ul>
+       <li>OpenGL startup error on some hardware</li>
+     </ul>
+
+   </description>
+  </release>
+ </releases>
+</component>
+EOF
+
 %build
 %set_build_flags
 
@@ -47,30 +202,35 @@ go build -v -mod=mod -trimpath -buildmode=pie -ldflags="-s -w" -o %{name} .
 %install
 install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
 
-cp res/supersonic-desktop.desktop res/%{name}.desktop
+cp res/supersonic-desktop.desktop res/%{app_id}.desktop
 mkdir -p %{buildroot}%{_datadir}/applications
 
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   --remove-key="Path" \
   --set-key="Exec" --set-value="%{name}" \
-  --set-key="Icon" --set-value="%{name}" \
-  res/%{name}.desktop
+  --set-key="Icon" --set-value="%{app_id}" \
+  res/%{app_id}.desktop
 
 for size in 128 256 512; do
   install -Dm644 res/appicon-${size}.png \
-    %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{name}.png
+    %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/%{app_id}.png
 done
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -Dm644 %{app_id}.metainfo.xml %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
+
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/applications/%{app_id}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{app_id}.png
+%{_metainfodir}/%{app_id}.metainfo.xml
 
 %changelog
 * Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-1
