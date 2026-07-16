@@ -1,23 +1,35 @@
-name: Check Upstream and Auto Update Spec
-
+name: Track upstream Supersonic releases
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  check-and-update:
+  bump:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
 
-      - name: Run Update Script
+      - name: Fetch latest upstream version
+        id: upstream
+        run: |
+          LATEST=$(curl -s https://api.github.com/repos/dweymouth/supersonic/releases/latest | jq -r .tag_name)
+          echo "version=${LATEST#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Read current version from spec
+        id: current
+        run: |
+          CUR=$(grep -m1 '^Version:' supersonic.spec | awk '{print $2}')
+          echo "version=$CUR" >> "$GITHUB_OUTPUT"
+
+      - name: Update spec with Python (includes Release Notes)
+        if: steps.upstream.outputs.version != steps.current.outputs.version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.upstream.outputs.version }}
         shell: python
         run: |
           import json
@@ -36,23 +48,8 @@ jobs:
           with urllib.request.urlopen(req) as response:
               data = json.loads(response.read().decode())
 
-          upstream_ver = data['tag_name'].lstrip('v')
+          upstream_ver = os.environ.get('NEW_VERSION')
           body = data.get('body', '')
-
-          with open('supersonic.spec', 'r') as f:
-              spec_content = f.read()
-
-          current_ver = re.search(r'^Version:\s+(\S+)', spec_content, re.MULTILINE).group(1)
-
-          print(f'Upstream Version: {upstream_ver}')
-          print(f'Current Version: {current_ver}')
-
-          if upstream_ver == current_ver:
-              print('No new version. No update required.')
-              if 'GITHUB_ENV' in os.environ:
-                  with open(os.environ['GITHUB_ENV'], 'a') as env_f:
-                      env_f.write('UPDATE_NEEDED=false\n')
-              exit(0)
 
           lines = body.split('\n')
           cleaned_notes = []
@@ -62,7 +59,7 @@ jobs:
                   continue
               if line.startswith('#'):
                   continue
-              
+
               if line.startswith('- ') or line.startswith('* ') or line.startswith('• '):
                   cleaned_line = re.sub(r'\*\*|\*', '', line[2:])
                   cleaned_notes.append(f'- {cleaned_line}')
@@ -76,7 +73,10 @@ jobs:
           changelog_str = '\n'.join(cleaned_notes)
 
           date_str = datetime.now().strftime('%a %b %d %Y')
-          new_entry = f'* {date_str} coffeeicus <coffeelover@coffeelover.uk> - {upstream_ver}-1\n{changelog_str}\n'
+          new_entry = f'* {date_str} Release Bot <bot@users.noreply.github.com> - {upstream_ver}-1\n{changelog_str}\n'
+
+          with open('supersonic.spec', 'r') as f:
+              spec_content = f.read()
 
           spec_content = re.sub(r'^Version:\s+\S+', f'Version:        {upstream_ver}', spec_content, flags=re.MULTILINE)
           spec_content = re.sub(r'^Release:\s+\S+', 'Release:        1%{?dist}', spec_content, flags=re.MULTILINE)
@@ -85,16 +85,11 @@ jobs:
           with open('supersonic.spec', 'w') as f:
               f.write(spec_content)
 
-          if 'GITHUB_ENV' in os.environ:
-              with open(os.environ['GITHUB_ENV'], 'a') as env_f:
-                  env_f.write('UPDATE_NEEDED=true\n')
-                  env_f.write(f'NEW_VERSION={upstream_ver}\n')
-
       - name: Commit and Push
-        if: env.UPDATE_NEEDED == 'true'
+        if: steps.upstream.outputs.version != steps.current.outputs.version
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action Bot"
+          git config user.name "release-bot"
+          git config user.email "bot@users.noreply.github.com"
           git add supersonic.spec
-          git commit -m "Update spec to version ${{ env.NEW_VERSION }} with upstream release notes [skip ci]"
+          git commit -m "Bump to v${{ steps.upstream.outputs.version }}"
           git push
