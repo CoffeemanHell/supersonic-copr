@@ -83,6 +83,7 @@ jobs:
           changelog_str = '\n'.join(cleaned_notes)
 
           date_str = datetime.now().strftime('%a %b %d %Y')
+          date_iso = datetime.now().strftime('%Y-%m-%d')
           new_entry = f'* {date_str} Release Bot <bot@users.noreply.github.com> - {upstream_ver}-1\n{changelog_str}\n'
 
           with open('supersonic.spec', 'r') as f:
@@ -91,6 +92,8 @@ jobs:
           spec_content = re.sub(r'^Version:\s+\S+', f'Version:        {upstream_ver}', spec_content, flags=re.MULTILINE)
           spec_content = re.sub(r'^Release:\s+\S+', 'Release:        1%{?dist}', spec_content, flags=re.MULTILINE)
           spec_content = spec_content.replace('%changelog\n', f'%changelog\n{new_entry}\n')
+          new_release_xml = f'<releases>\n  <release version="{upstream_ver}" date="{date_iso}">\n   <description/>\n  </release>'
+          spec_content = spec_content.replace('<releases>', new_release_xml)
 
           with open('supersonic.spec', 'w') as f:
               f.write(spec_content)
