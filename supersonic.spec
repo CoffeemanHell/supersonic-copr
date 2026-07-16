@@ -2,7 +2,7 @@
 %global _binary_payload w22T0.zstdio
 
 Name:           supersonic
-Version:        0.22.0
+Version:        0.21.1
 Release:        1%{?dist}
 Summary:        Cross-platform desktop client for self-hosted music servers
 
@@ -77,4 +77,4 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
-* Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-1
+* Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.21.1-1
