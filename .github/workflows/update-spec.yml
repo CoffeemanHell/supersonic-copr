@@ -86,17 +86,17 @@ jobs:
               f.write(spec_content)
 
           if os.path.exists('README.md'):
-              with open('README.md', 'r') as f:
-                  readme_content = f.read()
+              with open('README.md', 'r') as f_readme:
+                  readme_content = f_readme.read()
               
               readme_content = re.sub(
-                  r'status_image/last_build\.png\?v=\S+',
-                  f'status_image/last_build.png?v={upstream_ver}',
+                  r'last_build\.png\?v=[^\s\)]*',
+                  f'last_build.png?v={upstream_ver}',
                   readme_content
               )
               
-              with open('README.md', 'w') as f:
-                  f.write(readme_content)
+              with open('README.md', 'w') as f_readme:
+                  f_readme.write(readme_content)
 
       - name: Commit and Push
         if: steps.upstream.outputs.version != steps.current.outputs.version
