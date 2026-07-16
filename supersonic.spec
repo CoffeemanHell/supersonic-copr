@@ -94,9 +94,6 @@ cat > %{app_id}.metainfo.xml << 'EOF'
       <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/AlbumsView.png</image>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/AlbumView.png</image>
-    </screenshot>
-    <screenshot>
       <image>https://raw.githubusercontent.com/dweymouth/supersonic/main/res/screenshots/ArtistView.png</image>
     </screenshot>
     <screenshot>
@@ -161,7 +158,7 @@ cat > %{app_id}.metainfo.xml << 'EOF'
   </release>
   <release version="0.10.1" date="2024-04-21"/>
   <release version="0.10.0" date="2024-04-17"/>
-  <release version="0.9.1" date="2024-02-26"/>
+  <release date="2024-02-26" version="0.9.1"/>
   <release date="2024-01-27" version="0.9.0">
    <description>
      <p>
