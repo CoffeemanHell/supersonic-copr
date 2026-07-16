@@ -2,7 +2,7 @@
 
 Fedora COPR packaging for [Supersonic](https://github.com/dweymouth/supersonic) the desktop music client for Subsonic/Navidrome. 
 
-## Installation
+## Installation Instructions
 Execute these commands to install. We will assume you trust packages built by strangers on the internet. ( ಠ_ಠ)
 
 ```bash
