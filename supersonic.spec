@@ -44,7 +44,7 @@ export CGO_ENABLED=1
   export CXXFLAGS="%{optflags} -march=x86-64-v3 -O3 -pipe"
 %endif
 
-export GOFLAGS="-mod=mod -trimpath"
+export GOFLAGS="-mod=mod -trimpath -buildmode=pie"
 
 sed -i 's/go build/go build -ldflags="-s -w"/g' Makefile
 
@@ -58,7 +58,7 @@ install -Dm644 res/supersonic-desktop.desktop \
 sed -i -e '/^Path=/d' \
        -e "s/^Exec=.*/Exec=%{name}/" \
        -e "s/^Icon=.*/Icon=%{name}/" \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
+      %{buildroot}%{_datadir}/applications/%{name}.desktop
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 for size in 128 256 512; do
@@ -75,4 +75,4 @@ done
 
 %changelog
 * Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-1
-- Initial optimized build with Wayland support and x86-64-v3 flags
+- Initial optimized build with Wayland support, x86-64-v3 flags
