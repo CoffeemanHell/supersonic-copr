@@ -77,7 +77,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 %changelog
-* Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.21.1-1
-- New upstream release: 0.22.0
 
 * Thu Jul 16 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.21.1-1
