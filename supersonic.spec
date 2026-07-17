@@ -11,7 +11,7 @@ License:        GPL-3.0-or-later
 URL:            https://github.com/dweymouth/supersonic
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-BuildRequires:  golang >= 1.21
+BuildRequires:  golang
 BuildRequires:  gcc
 BuildRequires:  git
 BuildRequires:  desktop-file-utils
@@ -102,6 +102,9 @@ cat > %{app_id}.metainfo.xml << 'EOF'
   </screenshots>
 
  <releases>
+  <release version="0.22.0" date="2026-07-13">
+   <description/>
+  </release>
   <release version="0.21.1" date="2026-04-07">
    <description></description>
   </release>
@@ -195,6 +198,10 @@ EOF
 %set_build_flags
 
 export CGO_ENABLED=1
+export CGO_CFLAGS="${CFLAGS}"
+export CGO_CPPFLAGS="${CPPFLAGS}"
+export CGO_LDFLAGS="${LDFLAGS}"
+export GOTOOLCHAIN=local
 
 go build -v -mod=mod -trimpath -buildmode=pie -ldflags="-s -w" -o %{name} .
 
