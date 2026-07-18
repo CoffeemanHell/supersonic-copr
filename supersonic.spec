@@ -1,4 +1,3 @@
-%global debug_package %{nil}
 %global _binary_payload w22T0.zstdio
 %global app_id io.github.dweymouth.supersonic
 
