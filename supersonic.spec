@@ -4,7 +4,7 @@
 
 Name:           supersonic
 Version:        0.22.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cross-platform desktop client for self-hosted music servers
 
 License:        GPL-3.0-or-later
@@ -34,7 +34,8 @@ Obsoletes:      supersonic-desktop < %{version}-%{release}
 Provides:       supersonic-desktop = %{version}-%{release}
 
 %description
-A lightweight and full-featured cross-platform desktop client for self-hosted music servers.
+A lightweight and full-featured cross-platform desktop client for
+self-hosted music servers.
 
 %prep
 %autosetup -n %{name}-%{version}
@@ -73,14 +74,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
 appstream-util validate-relax --nonet \
     %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
 
-%post
-%{_bindir}/update-desktop-database &> /dev/null || :
-%{_bindir}/gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor &> /dev/null || :
-
-%postun
-%{_bindir}/update-desktop-database &> /dev/null || :
-%{_bindir}/gtk-update-icon-cache -f -t %{_datadir}/icons/hicolor &> /dev/null || :
-
 %files
 %license LICENSE
 %doc README.md
@@ -92,22 +85,9 @@ appstream-util validate-relax --nonet \
 %{_metainfodir}/%{app_id}.metainfo.xml
 
 %changelog
-* Thu Jul 13 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-2
-- The most notable change in 0.22.0 is the migration to Fyne 2.8. For Linux users, this adds full Wayland support, auto-selecting X11 or Wayland at startup from the same release binary. Building from source and specifying `-tags wayland` is no longer needed. It also fixes a few bugs that have impacted the `-tags wayland` builds.
-- #909 IPC endpoint for getting the current track/radio station
-- #910 Support for the OpenSubsonic playbackReport extension
-- #955 "All Tracks" option on the Startup page
-- Cover art support for internet radio stations
-- Updated Polish, Spanish, Greek, Turkish, and French translations
-- #54 Migrate to Fyne 2.8, adding Wayland support
-- #958 Match window border color to app theme rather than OS theme
-- #803 Artist biography text now scrolls instead of being truncated
-- #560 UI freeze after switching workspaces on Wayland
-- #823 Segfault when clicking the tray icon on Wayland
-- #899 Crash/freeze when system keyring unlock dialog blocked the main event loop on startup
-- #740 Race condition when using an alternate hostname caused 401 auth errors
-- #917 UI scale setting not applied correctly when using a non-English language
-- #931 DLNA cast DIDL-Lite metadata missing artist, album, cover art, and <res> audio attributes
-- Stale cover art and Now Playing background persisting on tracks without art
-- Autoplay (similar songs) incorrectly enqueuing tracks while a radio station is playing
+* Mon Jul 13 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-3
+- The most notable change in 0.22.0 is the migration to Fyne 2.8.
+- For Linux users, this adds full Wayland support, auto-selecting X11
+- or Wayland at startup from the same release binary.
+-
 - Full Changelog: https://github.com/dweymouth/supersonic/compare/v0.21.1...v0.22.0
