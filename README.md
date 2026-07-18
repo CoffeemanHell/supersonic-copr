@@ -6,5 +6,5 @@ Fedora COPR packaging for [Supersonic](https://github.com/dweymouth/supersonic) 
 Execute these commands to install. We will assume you trust packages built by strangers on the internet. ( ಠ_ಠ)
 
 ```bash
-sudo dnf copr enable coffeeicus/supersonic
-sudo dnf install supersonic
+dnf copr enable coffeeicus/supersonic
+dnf install supersonic
