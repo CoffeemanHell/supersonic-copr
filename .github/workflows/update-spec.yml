@@ -84,7 +84,7 @@ jobs:
           changelog_str = '\n'.join(cleaned_notes)
 
           date_str = datetime.now().strftime('%a %b %d %Y')
-          new_entry = f'* {date_str} Release Bot <bot@users.noreply.github.com> - {upstream_ver}-1\n{changelog_str}\n'
+          new_entry = f'* {date_str} github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com> - {upstream_ver}-1\n{changelog_str}\n'
 
           with open('supersonic.spec', 'r') as f:
               spec_content = f.read()
@@ -99,8 +99,8 @@ jobs:
       - name: Commit and Push
         if: steps.upstream.outputs.version != steps.current.outputs.version
         run: |
-          git config user.name "release-bot"
-          git config user.email "bot@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add supersonic.spec
-          git commit -m "Bump to v${{ steps.upstream.outputs.version }}"
+          git commit -m "Bump Supersonic to v${{ steps.upstream.outputs.version }}"
           git push
