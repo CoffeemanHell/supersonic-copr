@@ -46,7 +46,7 @@ export CGO_CPPFLAGS="${CPPFLAGS}"
 export CGO_LDFLAGS="${LDFLAGS}"
 export GOTOOLCHAIN=local
 
-go build -v -mod=mod -trimpath -buildmode=pie -ldflags="-s -w" -o %{name} .
+go build -v -mod=mod -buildmode=pie -o %{name} .
 
 %install
 install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
