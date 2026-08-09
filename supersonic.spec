@@ -3,29 +3,29 @@
 
 Name:           supersonic
 Version:        0.22.1
-Release:        3%{?dist}
+Release:        1%{?dist}
 Summary:        Cross-platform desktop client for self-hosted music servers
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/dweymouth/supersonic
+URL:            https://github.com/supersonic-app/supersonic
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  git
 BuildRequires:  golang >= 1.24
 BuildRequires:  desktop-file-utils
-BuildRequires:  libappstream-glib
-BuildRequires:  pkgconf-pkg-config
-BuildRequires:  mpv-devel
-BuildRequires:  wayland-devel
-BuildRequires:  libxkbcommon-devel
-BuildRequires:  libX11-devel
-BuildRequires:  libXcursor-devel
-BuildRequires:  libXrandr-devel
-BuildRequires:  libXinerama-devel
-BuildRequires:  libXi-devel
-BuildRequires:  libglvnd-devel
-BuildRequires:  libXxf86vm-devel
+BuildRequires:  appstream
+BuildRequires:  pkgconfig
+BuildRequires:  pkgconfig(mpv)
+BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(xxf86vm)
 
 Requires:       hicolor-icon-theme
 
@@ -66,27 +66,26 @@ for size in 128 256 512; do
 done
 
 install -Dm644 res/io.github.dweymouth.supersonic.appdata.xml \
- %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{app_id}.desktop
-appstream-util validate-relax --nonet \
-    %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
+appstreamcli validate --no-net %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xml
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{app_id}.desktop
-%{_datadir}/icons/hicolor/128x128/apps/%{app_id}.png
-%{_datadir}/icons/hicolor/256x256/apps/%{app_id}.png
-%{_datadir}/icons/hicolor/512x512/apps/%{app_id}.png
+%{_datadir}/icons/hicolor/*/apps/%{app_id}.png
 %{_metainfodir}/%{app_id}.metainfo.xml
 
 %changelog
+* Sun Aug 09 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.1-1
+- Update to version 0.22.1
+- 0.22.1 brings several Wayland fixes and a few other fixes and enhancements
+- Full Changelog: https://github.com/supersonic-app/supersonic/compare/v0.22.0...v0.22.1
+
 * Mon Jul 13 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-3
-- The most notable change in 0.22.0 is the migration to Fyne 2.8.
-- For Linux users, this adds full Wayland support, auto-selecting X11
-- or Wayland at startup from the same release binary.
--
+- Migration to Fyne 2.8 with full Wayland support.
 - Full Changelog: https://github.com/dweymouth/supersonic/compare/v0.21.1...v0.22.0
