@@ -15,12 +15,26 @@ jobs:
 
       - name: Bump Version in spec
         run: |
-          TAG=$(curl -fsSL https://api.github.com/repos/dweymouth/supersonic/releases/latest | jq -r .tag_name)
+          TAG=$(curl -fsSL https://api.github.com/repos/supersonic-app/supersonic/releases/latest | jq -r .tag_name)
           echo "$TAG" | grep -qE '^v[0-9]+(\.[0-9]+)+$' || { echo "::error::Bad tag_name: '$TAG'" >&2; exit 1; }
+
           VER=${TAG#v}
           CUR=$(grep -m1 '^Version:' supersonic.spec | grep -oE '[0-9]+(\.[0-9]+)+')
+
           [ "$VER" = "$CUR" ] && exit 0
+
           sed -i -E "s/^(Version:[[:space:]]+).*/\1$VER/" supersonic.spec
+          sed -i -E "s/^(Release:[[:space:]]+).*/\11%\{?dist\}/" supersonic.spec
+
+          DATE=$(LC_ALL=C date "+%a %b %d %Y")
+
+          MAINTAINER=$(grep -m1 '^\* ' supersonic.spec | sed -E 's/^\* [A-Za-z]{3} [A-Za-z]{3} [0-9]+ [0-9]{4} (.+) - .*/\1/')
+          [ -z "$MAINTAINER" ] && MAINTAINER="coffeeicus <coffeelover@coffeelover.uk>"
+
+          CHANGELOG="* $DATE $MAINTAINER - $VER-1\n- Update to version $VER\n- Full Changelog: https://github.com/supersonic-app/supersonic/compare/v$CUR...v$VER\n"
+
+          sed -i "/^%changelog/a $CHANGELOG" supersonic.spec
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add supersonic.spec
