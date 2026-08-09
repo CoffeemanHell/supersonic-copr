@@ -2,7 +2,7 @@
 %global app_id io.github.dweymouth.supersonic
 
 Name:           supersonic
-Version:        0.22.0
+Version:        0.22.1
 Release:        3%{?dist}
 Summary:        Cross-platform desktop client for self-hosted music servers
 
