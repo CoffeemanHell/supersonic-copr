@@ -39,6 +39,8 @@ self-hosted music servers.
 %prep
 %autosetup -n %{name}-%{version}
 
+sed -i 's|<id>io.github.supersonic-app.supersonic</id>|<id>%{app_id}</id>|' res/io.github.dweymouth.supersonic.appdata.xml
+
 %build
 export CGO_ENABLED=1
 export CGO_CFLAGS="${CFLAGS}"
@@ -83,7 +85,6 @@ appstreamcli validate --no-net %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xm
 %changelog
 * Sun Aug 09 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.1-1
 - Update to version 0.22.1
-- 0.22.1 brings several Wayland fixes and a few other fixes and enhancements
 - Full Changelog: https://github.com/supersonic-app/supersonic/compare/v0.22.0...v0.22.1
 
 * Mon Jul 13 2026 coffeeicus <coffeelover@coffeelover.uk> - 0.22.0-3
