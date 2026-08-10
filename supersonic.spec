@@ -8,11 +8,9 @@ Summary:        Cross-platform desktop client for self-hosted music servers
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/supersonic-app/supersonic
-Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-Source1:        https://github.com/CoffeemanHell/supersonic-copr/releases/download/v0.22.1/vendor.tar.gz
+Source0:        https://github.com/CoffeemanHell/supersonic-copr/releases/download/v%{version}/supersonic-%{version}.tar.gz
 
 BuildRequires:  gcc
-BuildRequires:  git
 BuildRequires:  golang >= 1.24
 BuildRequires:  desktop-file-utils
 BuildRequires:  appstream
@@ -38,7 +36,7 @@ A lightweight and full-featured cross-platform desktop client for
 self-hosted music servers.
 
 %prep
-%autosetup -n %{name}-%{version} -a 1
+%autosetup -n %{name}-%{version}
 
 sed -i 's|<id>io.github.supersonic-app.supersonic</id>|<id>%{app_id}</id>|' res/io.github.dweymouth.supersonic.appdata.xml
 
@@ -49,7 +47,7 @@ export CGO_CPPFLAGS="${CPPFLAGS}"
 export CGO_LDFLAGS="${LDFLAGS}"
 export GOTOOLCHAIN=local
 
-go build -v -mod=mod -buildmode=pie -o %{name} .
+go build -v -mod=vendor -buildmode=pie -o %{name} .
 
 %install
 install -Dm755 %{name} %{buildroot}%{_bindir}/%{name}
@@ -78,7 +76,7 @@ appstreamcli validate --no-net %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xm
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/%{name}
+%{_bindir}%{/}%{name}
 %{_datadir}/applications/%{app_id}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{app_id}.png
 %{_metainfodir}/%{app_id}.metainfo.xml
