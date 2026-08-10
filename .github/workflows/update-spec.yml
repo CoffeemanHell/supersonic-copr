@@ -16,7 +16,7 @@ jobs:
         with:
           go-version: '1.24'
 
-      - name: Bump Version & Vendor
+      - name: Bump Version
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -26,13 +26,17 @@ jobs:
           CUR=$(grep -m1 '^Version:' supersonic.spec | awk '{print $2}')
           REPO="${{ github.repository }}"
 
-          if gh release view v$VER --repo $REPO --json assets -q '.assets[].name' 2>/dev/null | grep -q "vendor.tar.gz"; then
-            [ "$VER" = "$CUR" ] && { echo "Her şey güncel, çıkılıyor."; exit 0; }
+          if gh release view v$VER --repo $REPO --json assets -q '.assets[].name' 2>/dev/null | grep -q "supersonic-$VER.tar.gz"; then
+            [ "$VER" = "$CUR" ] && { echo "Everything is up to date"; exit 0; }
           fi
 
-          echo "vendor.tar.gz oluşturuluyor..."
+          echo "Downloading source code and adding vendor..."
           curl -sL https://github.com/supersonic-app/supersonic/archive/refs/tags/$TAG.tar.gz | tar xz
-          cd supersonic-$VER && go mod vendor && tar czf ../vendor.tar.gz vendor && cd ..
+          cd supersonic-$VER
+          go mod vendor
+          cd ..
+          
+          tar czf supersonic-$VER.tar.gz supersonic-$VER
 
           NEEDS_COMMIT=false
           if [ "$VER" != "$CUR" ]; then
@@ -43,9 +47,9 @@ jobs:
             NEEDS_COMMIT=true
           fi
 
-          SOURCE1="https://github.com/$REPO/releases/download/v$VER/vendor.tar.gz"
-          if ! grep -q "^Source1:.*$SOURCE1" supersonic.spec; then
-            sed -i -E "s|^(Source1:[[:space:]]+).*|\1$SOURCE1|" supersonic.spec
+          SOURCE0="https://github.com/$REPO/releases/download/v$VER/supersonic-$VER.tar.gz"
+          if ! grep -q "^Source0:.*$SOURCE0" supersonic.spec; then
+            sed -i -E "s|^(Source0:[[:space:]]+).*|\1$SOURCE0|" supersonic.spec
             NEEDS_COMMIT=true
           fi
 
@@ -57,5 +61,5 @@ jobs:
             git push --follow-tags
           fi
 
-          gh release create v$VER vendor.tar.gz --repo $REPO --notes "Auto-generated vendor for $VER" || \
-          gh release upload v$VER vendor.tar.gz --repo $REPO --clobber
+          gh release create v$VER supersonic-$VER.tar.gz --repo $REPO --notes "Auto-generated source with vendor for $VER" || \
+          gh release upload v$VER supersonic-$VER.tar.gz --repo $REPO --clobber
