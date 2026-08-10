@@ -30,6 +30,12 @@ jobs:
             [ "$VER" = "$CUR" ] && { echo "Everything is up to date"; exit 0; }
           fi
 
+          if [ -n "$CUR" ] && [ "$VER" != "$CUR" ]; then
+            echo "Removing old version (v$CUR) release and tag..."
+            gh release delete v$CUR --repo $REPO --yes || true
+            git push origin :refs/tags/v$CUR || true
+          fi
+
           echo "Downloading source code and adding vendor..."
           curl -sL https://github.com/supersonic-app/supersonic/archive/refs/tags/$TAG.tar.gz | tar xz
           cd supersonic-$VER
