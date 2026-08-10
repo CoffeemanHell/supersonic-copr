@@ -17,30 +17,45 @@ jobs:
           go-version: '1.24'
 
       - name: Bump Version & Vendor
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -e
           TAG=$(curl -fsSL https://api.github.com/repos/supersonic-app/supersonic/releases/latest | jq -r .tag_name)
           VER=${TAG#v}
           CUR=$(grep -m1 '^Version:' supersonic.spec | awk '{print $2}')
+          REPO="${{ github.repository }}"
 
-          [ "$VER" = "$CUR" ] && exit 0
+          if gh release view v$VER --repo $REPO --json assets -q '.assets[].name' 2>/dev/null | grep -q "vendor.tar.gz"; then
+            [ "$VER" = "$CUR" ] && { echo "Her şey güncel, çıkılıyor."; exit 0; }
+          fi
 
+          echo "vendor.tar.gz oluşturuluyor..."
           curl -sL https://github.com/supersonic-app/supersonic/archive/refs/tags/$TAG.tar.gz | tar xz
           cd supersonic-$VER && go mod vendor && tar czf ../vendor.tar.gz vendor && cd ..
 
-          sed -i -E "s/^(Version:[[:space:]]+).*/\1$VER/" supersonic.spec
-          sed -i -E "s/^(Release:[[:space:]]+).*/\11%{?dist}/" supersonic.spec
-          sed -i -E "s|^(Source1:[[:space:]]+).*|\1https://github.com/${{ github.repository }}/releases/download/v$VER/vendor.tar.gz|" supersonic.spec
+          NEEDS_COMMIT=false
+          if [ "$VER" != "$CUR" ]; then
+            sed -i -E "s/^(Version:[[:space:]]+).*/\1$VER/" supersonic.spec
+            sed -i -E "s/^(Release:[[:space:]]+).*/\11%{?dist}/" supersonic.spec
+            DATE=$(LC_ALL=C date "+%a %b %d %Y")
+            sed -i "/^%changelog/a * $DATE coffeeicus <coffeelover@coffeelover.uk> - $VER-1\n- Update to $VER" supersonic.spec
+            NEEDS_COMMIT=true
+          fi
 
-          DATE=$(LC_ALL=C date "+%a %b %d %Y")
-          sed -i "/^%changelog/a * $DATE coffeeicus <coffeelover@coffeelover.uk> - $VER-1\n- Update to $VER" supersonic.spec
+          SOURCE1="https://github.com/$REPO/releases/download/v$VER/vendor.tar.gz"
+          if ! grep -q "^Source1:.*$SOURCE1" supersonic.spec; then
+            sed -i -E "s|^(Source1:[[:space:]]+).*|\1$SOURCE1|" supersonic.spec
+            NEEDS_COMMIT=true
+          fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Bump Supersonic to v$VER"
-          git tag v$VER
-          git push --follow-tags
+          if [ "$NEEDS_COMMIT" = true ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "Bump/Update Supersonic to v$VER"
+            [ "$VER" != "$CUR" ] && git tag v$VER
+            git push --follow-tags
+          fi
 
-          gh release create v$VER vendor.tar.gz --notes "Auto-generated vendor for $VER"
-        env:
-          GH_TOKEN: ${{ github.token }}
+          gh release create v$VER vendor.tar.gz --repo $REPO --notes "Auto-generated vendor for $VER" || \
+          gh release upload v$VER vendor.tar.gz --repo $REPO --clobber
