@@ -9,7 +9,7 @@ Summary:        Cross-platform desktop client for self-hosted music servers
 License:        GPL-3.0-or-later
 URL:            https://github.com/supersonic-app/supersonic
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
-Source1:        vendor.tar.gz
+Source1:        https://github.com/CoffeemanHell/supersonic-copr/releases/download/v0.22.1/vendor.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  git
