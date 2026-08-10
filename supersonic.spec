@@ -76,7 +76,7 @@ appstreamcli validate --no-net %{buildroot}%{_metainfodir}/%{app_id}.metainfo.xm
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}%{/}%{name}
+%{_bindir}/%{name}
 %{_datadir}/applications/%{app_id}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{app_id}.png
 %{_metainfodir}/%{app_id}.metainfo.xml
