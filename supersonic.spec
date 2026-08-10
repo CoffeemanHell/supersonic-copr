@@ -9,6 +9,7 @@ Summary:        Cross-platform desktop client for self-hosted music servers
 License:        GPL-3.0-or-later
 URL:            https://github.com/supersonic-app/supersonic
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
+Source1:        vendor.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  git
@@ -37,7 +38,7 @@ A lightweight and full-featured cross-platform desktop client for
 self-hosted music servers.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -n %{name}-%{version} -a 1
 
 sed -i 's|<id>io.github.supersonic-app.supersonic</id>|<id>%{app_id}</id>|' res/io.github.dweymouth.supersonic.appdata.xml
 
