@@ -63,8 +63,18 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -am "Bump/Update Supersonic to v$VER"
-            [ "$VER" != "$CUR" ] && git tag v$VER
-            git push --follow-tags
+            git push
+          fi
+          SHA=$(git rev-parse HEAD)
+
+          gh release create v$VER supersonic-$VER.tar.gz \
+              --repo $REPO --target "$SHA" \
+              --notes "Auto-generated source with vendor for $VER" || \
+          gh release upload v$VER supersonic-$VER.tar.gz --repo $REPO --clobber
+
+          if [ -n "$CUR" ] && [ "$VER" != "$CUR" ]; then
+            gh release delete v$CUR --repo $REPO --yes || true
+            git push origin :refs/tags/v$CUR || true
           fi
 
           gh release create v$VER supersonic-$VER.tar.gz --repo $REPO --notes "Auto-generated source with vendor for $VER" || \
