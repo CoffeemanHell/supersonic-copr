@@ -4,7 +4,7 @@
 
 Name:           supersonic
 Version:        0.22.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cross-platform desktop client for self-hosted music servers
 
 License:        GPL-3.0-or-later
