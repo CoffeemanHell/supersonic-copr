@@ -1,5 +1,5 @@
 %global _binary_payload w22T0.zstdio
-%global app_id io.github.dweymouth.supersonic
+%global app_id io.github.supersonic-app.supersonic
 
 Name:           supersonic
 Version:        0.22.1
