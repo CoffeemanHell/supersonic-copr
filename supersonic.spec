@@ -1,5 +1,6 @@
 %global _binary_payload w22T0.zstdio
 %global app_id io.github.supersonic-app.supersonic
+%global debug_package %{nil}
 
 Name:           supersonic
 Version:        0.22.1
@@ -37,8 +38,6 @@ self-hosted music servers.
 
 %prep
 %autosetup -n %{name}-%{version}
-
-sed -i 's|<id>io.github.supersonic-app.supersonic</id>|<id>%{app_id}</id>|' res/io.github.dweymouth.supersonic.appdata.xml
 
 %build
 export CGO_ENABLED=1
